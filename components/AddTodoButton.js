@@ -1,11 +1,11 @@
-import React, {useContext} from 'react'
-import {StyleSheet, View, Text, Button, TouchableOpacity, TouchableNativeFeedback } from 'react-native'
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import {StyleSheet, View, TouchableNativeFeedback } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { toggleTodoPopup } from '../Context/actions';
-import { Context } from '../Context/Context';
+import { toggleTodoPopup } from '../Redux/actions';
 
 const AddTodoButton = () => {
-    const { dispatch } = useContext(Context);
+    const dispatch = useDispatch();
 
     return (
         <View style={styles.button}> 
@@ -44,4 +44,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default AddTodoButton
+export default AddTodoButton;

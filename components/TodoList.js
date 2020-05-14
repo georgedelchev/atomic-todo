@@ -1,14 +1,14 @@
-import React, { useContext, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
-import { Context } from '../Context/Context';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import TodoItem from './TodoItem';
 
 const TodoList = () => {
-    const { state } = useContext(Context);
+    const todoList = useSelector(state => state.todoList);
     const [status, setStatus] = useState('all');
 
-    let pending = state.todoList.filter(todo => !todo.isComplete);
-    let completed = state.todoList.filter(todo => todo.isComplete);
+    let pending = todoList.filter(todo => !todo.isComplete);
+    let completed = todoList.filter(todo => todo.isComplete);
     let filteredTodos = [];
 
     const filtersStyle = {
@@ -29,23 +29,24 @@ const TodoList = () => {
         <ScrollView style={styles.listContainer}>
             <View style={styles.list}>
                 <FlatList data={filteredTodos} renderItem={({ item }) => {
-                    return <TodoItem title={item.title} id={item.id} isComplete={item.isComplete} />
+                    return <TodoItem visibility={item.visibility} title={item.title} id={item.id} 
+                    isComplete={item.isComplete} isEditMenuVisible={item.isEditMenuVisible} priority={item.priority}/>
                 }} />
             </View>
-            { state.todoList[0] &&
+            { todoList[0] &&
                 <View style={styles.filterButtons}>
                     <TouchableOpacity onPress={() => setStatus('all')}>
                         <View style={{flexDirection: 'row'}}>
-                            <Text style={{...styles.text, ...filtersStyle['all']}}>All</Text><Text style={styles.text}>  |  </Text> 
+                            <Text style={{...styles.text, ...filtersStyle['all']}}>All({pending.concat(completed).length})</Text><Text style={styles.text}>  |  </Text> 
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => setStatus('pending')}>
                         <View style={{flexDirection: 'row'}}>
-                            <Text style={{...styles.text, ...filtersStyle['pending']}}> Pending</Text><Text style={styles.text}>  |  </Text>
+                            <Text style={{...styles.text, ...filtersStyle['pending']}}> Pending({pending.length})</Text><Text style={styles.text}>  |  </Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => setStatus('completed')}>
-                        <Text style={{...styles.text, ...filtersStyle['completed']}}> Completed</Text>
+                        <Text style={{...styles.text, ...filtersStyle['completed']}}> Completed({completed.length})</Text>
                     </TouchableOpacity>
                 </View>
             }
@@ -58,10 +59,6 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     
-    list: {
-        elevation: 20,
-    },
-    
     filterButtons: {
         flexDirection: 'row',
         justifyContent: 'center',
@@ -70,7 +67,8 @@ const styles = StyleSheet.create({
     },
 
     text: {
-        fontSize: 18
+        fontSize: 18,
+        color: '#404040'
     },
 
     activeFilter: {

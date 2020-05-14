@@ -1,19 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import 'react-native-gesture-handler';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Alert, BackHandler } from 'react-native';
-import AddTodoButton from './components/AddTodoButton';
-import AddTodoInput from './components/AddTodoInput';
-import StateProvider from './Context/Context';
-import TodoList from './components/TodoList';
-import Header from './components/Header';
+import { NavigationContainer } from '@react-navigation/native';
+import { store } from './Redux/store';
+import { Provider } from 'react-redux';
+import AppNavigator from './screens/screens';
 
 const App = () => {
-  useEffect(() => {
-    BackHandler.addEventListener("hardwareBackPress", backAction);
+  useEffect(handleExit, []);
 
-    return () =>
-        BackHandler.removeEventListener("hardwareBackPress", backAction);
-  }, []);
+  return (
+    <Provider store={store}>
+      <NavigationContainer>
+        <AppNavigator />      
+      </NavigationContainer>
+    </Provider>
+  );
+};
 
+function handleExit() {
   const backAction = () => {
     Alert.alert('Wait a minute!', 'Are you sure you want to quit?', [
       {
@@ -28,25 +33,9 @@ const App = () => {
     ]);
     return true;
   }
+  BackHandler.addEventListener("hardwareBackPress", backAction);
 
-
-  return (
-    <StateProvider>
-      <Header />
-      <View style={styles.container}>
-        <TodoList />
-        <AddTodoInput />
-        <AddTodoButton />
-      </View>
-    </StateProvider>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white'
-  }
-});
+  return () => BackHandler.removeEventListener("hardwareBackPress", backAction);
+}
 
 export default App;
